@@ -8,31 +8,33 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument(
         'photo',
-        type=str
+        type=str,
+        help='speaker photo'
         )
 
 parser.add_argument(
         'title',
-        type=str
+        type=str,
+        help='video title'
         )
 
 parser.add_argument(
-        'speaker_name',
-        type=str
+        'speaker',
+        type=str,
+        help='speaker name'
         )
 
 parser.add_argument(
         'focus',
-        help='the bigger color',
+        help='larger color',
         type=int
         )
 
-
 from PIL import Image, ImageDraw, ImageFont
-
+from os.path import exists
 
 def write_text(text: str, font_size: float,
-        color: str, img,
+        text_color: str, img,
         top_gap: float, left_gap: float) -> None:
 
     size = int(width*font_size)
@@ -40,20 +42,18 @@ def write_text(text: str, font_size: float,
     axis = font.getsize(text)
 
     x = int(width*left_gap - (axis[0]//2))
-    y = int(height*top_gap - (axis[1])//2)
+    y = int(height*top_gap - (axis[1]//2))
 
     axis = (x, y)
-    img.text(axis, text, fill = color, font=font)
+    img.text(axis, text, fill = text_color, font=font)
 
+def draw_4_colors(img: Image.Image) -> None:
 
-def resize_image(ratio: float, img: Image.Image) -> Image.Image:
-    size = int(img.size[0] * ratio), int(img.size[1] * ratio)
-    img = img.resize(size)
-    return img
+    back = Image.new(mode = "RGBA",
+            size = (width, height),
+            color = black)
 
-
-def draw_4_colors(img: Image.Image) -> Image.Image:
-    size = img.size
+    size = back.size
 
     start_y = 0
     color = colors[4]
@@ -62,7 +62,7 @@ def draw_4_colors(img: Image.Image) -> Image.Image:
             break
         for y in range(start_y, size[1]-1):
             axis = (x, y)
-            img.putpixel(axis, color)
+            back.putpixel(axis, color)
         start_y += 2
 
     for start_x in range(size[0] - 1, -1, -1):
@@ -72,61 +72,62 @@ def draw_4_colors(img: Image.Image) -> Image.Image:
             if y > size[1] - 1:
                 break
             axis = (x, y)
-            img.putpixel(axis, color)
+            back.putpixel(axis, color)
             axis = (x, y + 1)
-            img.putpixel(axis, color)
+            back.putpixel(axis, color)
             y += 2
 
-
-    return img
-
-font_path = '/usr/share/fonts/adobe-source-code-pro/SourceCodePro-Semibold.otf'
-
-width, height = 1920, 1080
+    img.alpha_composite(back, (0,0))
 
 opacity = 0.75
 
+EACH  = (255,   2, 158, int(255 * opacity))
+IME   = (255, 120,  37, int(255 * opacity))
+UFABC = (7,   139,   1, int(255 * opacity))
+SANCA = (94,  200, 174, int(255 * opacity))
+
+colors = [EACH, IME, UFABC, SANCA]
+
 white  = "#FFFFFF"
 black  = "#000000"
-color1 = (255, 2, 158, int(255 * opacity))
-color2 = (255, 120, 37, int(255 * opacity))
-color3 = (7, 139, 1, int(255 * opacity))
-color4 = (94, 200, 174, int(255 * opacity))
 
-colors = [color1, color2, color3, color4]
+font_path = '/usr/share/fonts/adobe-source-code-pro/SourceCodePro-Semibold.otf'
+
+if not exists(font_path):
+    print('font_path not found')
+    exit()
 
 if __name__ == '__main__':
 
     args = parser.parse_args()
-
-    focus = args.focus
-    if focus > 4 or focus < 1:
-        print("Focus need to be between 1 and 4")
-        exit
-    colors.insert(focus, colors[focus])
-
+    focus: int = args.focus
     photo = args.photo
-    speaker = args.speaker_name
+    speaker = args.speaker
     title = args.title
 
-    thumbmail= Image.new(mode = "RGBA",
-            size = (width, height),
-            color = black)
+    global width, heigth
 
-    thumb_draw = ImageDraw.Draw(thumbmail)
+    # Draw Speaker photo
+    thumbmail = Image.open(photo)
+    width, height = thumbmail.size
 
-    #speaker_img = Image.open(speaker)
-    #thumbmail.alpha_composite(speaker_img, (0,0))
-
+    # Draw 4 colors
+    if focus < 0  or focus > 3:
+        print("focus need to be 0 - EACH, 1 - IME, 2 - UFABC or 3 - SANCA")
+        exit()
+    colors.insert(focus, colors[focus])
     draw_4_colors(thumbmail)
 
-    write_text(text=title, font_size=0.045, color=white,
-            img=thumb_draw, top_gap=0.53, left_gap=0.5)
+    # Write title and speakers name
+    thumb_draw = ImageDraw.Draw(thumbmail)
 
-    write_text(text=speaker, font_size=0.035, color=white,
+    write_text(text=title, font_size=0.045, text_color=white,
+            img=thumb_draw, top_gap=0.6, left_gap=0.5)
+
+    write_text(text=speaker, font_size=0.035, text_color=white,
             img=thumb_draw, top_gap=0.7, left_gap=0.5)
 
-    code_lab_logo = Image.open('./code_lab.png')
+    # Draw Code Lab Template
+    code_lab_logo = Image.open('./code_lab_template.png')
     thumbmail.alpha_composite(code_lab_logo, (0,0))
-
-    thumbmail.save('./thumbmail.png')
+    thumbmail.save(f'./{speaker}.png')
