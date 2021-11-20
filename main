@@ -61,8 +61,7 @@ def draw_4_colors(img: Image.Image) -> None:
         if start_y > size[1] - 1:
             break
         for y in range(start_y, size[1]-1):
-            axis = (x, y)
-            back.putpixel(axis, color)
+            back.putpixel((x,y), color)
         start_y += 2
 
     for start_x in range(size[0] - 1, -1, -1):
@@ -71,10 +70,8 @@ def draw_4_colors(img: Image.Image) -> None:
         for x in range(start_x, -1, -1):
             if y > size[1] - 1:
                 break
-            axis = (x, y)
-            back.putpixel(axis, color)
-            axis = (x, y + 1)
-            back.putpixel(axis, color)
+            back.putpixel((x,y), color)
+            back.putpixel((x,y+1), color)
             y += 2
 
     img.alpha_composite(back, (0,0))
@@ -108,7 +105,8 @@ if __name__ == '__main__':
     global width, heigth
 
     # Draw Speaker photo
-    thumbmail = Image.open(photo)
+    thumbmail = Image.open(photo).convert('RGBA')
+    thumbmail = thumbmail.resize((1920, 1080), Image.BILINEAR)
     width, height = thumbmail.size
 
     # Draw 4 colors
@@ -130,4 +128,4 @@ if __name__ == '__main__':
     # Draw Code Lab Template
     code_lab_logo = Image.open('./code_lab_template.png')
     thumbmail.alpha_composite(code_lab_logo, (0,0))
-    thumbmail.save(f'./{speaker}.png')
+    thumbmail.save(f'./{speaker}_thumbmail.png')

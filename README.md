@@ -12,4 +12,4 @@ Erich Gamma thumbmail
 
 ## Output
 
-<img src="./Erich Gamma.png" width="400px">
+<img src="./Erich Gamma_thumbmail.png" width="400px">
