@@ -1,6 +1,6 @@
 # Code lab Thumbmail
 
-Automaticaly creates a thumbmail for codelab
+Script to create codelab thumbmail
 
 ## Example
 
@@ -12,6 +12,4 @@ Erich Gamma thumbmail
 
 ## Output
 
-<center>
-    <img src="./Erich Gamma.png" width="400px">
-</center>
+<img src="./Erich Gamma.png" width="400px">
