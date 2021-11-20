@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     # Draw Speaker photo
     thumbmail = Image.open(photo).convert('RGBA')
-    thumbmail = thumbmail.resize((1920, 1080), Image.BILINEAR)
+    thumbmail = thumbmail.resize((1920, 1080), Image.BICUBIC)
     width, height = thumbmail.size
 
     # Draw 4 colors
