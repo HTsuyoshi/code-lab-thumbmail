@@ -7,7 +7,8 @@ Script to create codelab thumbmail
 Erich Gamma thumbmail
 
 ```
-./main ./no_copyright.png 'Continuous Delivery' 'Erich Gamma' 1
+./main  no_copyright.png 'random text' 'random speaker' 2
+
 ```
 
 ## Output
