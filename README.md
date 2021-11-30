@@ -6,7 +6,6 @@ Script to create codelab thumbmail
 
 ```
 ./main  no_copyright.png 'random text' 'random speaker' 2
-
 ```
 
 ## Output
