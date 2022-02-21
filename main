@@ -88,7 +88,7 @@ colors = [EACH, IME, UFABC, SANCA]
 white  = "#FFFFFF"
 black  = "#000000"
 
-font_path = '/usr/share/fonts/adobe-source-code-pro/SourceCodePro-Semibold.otf'
+font_path = './fonts/SourceCodePro-Semibold.otf'
 
 if not exists(font_path):
     print('font_path not found')
